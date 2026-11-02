@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="ka">
 <head>
@@ -54,11 +55,11 @@ const SUPABASE_URL = "https://nraykxancxojrvmcxsvj.supabase.co";
 const SUPABASE_KEY = "sb_publishable_nh4gN8C_bVbe7AZ8yuaGlg_SL8Rb7Vz";
 
 const db = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+let editingId = null;
 let existingCoverUrl = "";
 
 async function uploadCover(){
   const file = document.getElementById("coverFile").files[0];
-
   if(!file) return existingCoverUrl;
 
   if(!file.type.startsWith("image/")){
@@ -67,22 +68,16 @@ async function uploadCover(){
 
   const path = Date.now() + "-" + file.name.replace(/[^a-zA-Z0-9._-]/g, "-");
 
-  const {error} = await db.storage
-    .from("book-covers")
-    .upload(path, file);
-
+  const {error} = await db.storage.from("book-covers").upload(path, file);
   if(error) throw error;
 
-  const {data} = db.storage
-    .from("book-covers")
-    .getPublicUrl(path);
-
+  const {data} = db.storage.from("book-covers").getPublicUrl(path);
   return data.publicUrl;
 }
 
 async function login(){
   const {data,error} = await db.auth.signInWithPassword({
-    email:document.getElementById("email").value,
+    email:document.getElementById("email").value.trim(),
     password:document.getElementById("password").value
   });
 
@@ -143,6 +138,13 @@ async function loadBooks(){
 }
 
 async function saveBook(){
+  const title=document.getElementById("title").value.trim();
+
+  if(!title){
+    alert("ჩაწერე ზღაპრის სათაური");
+    return;
+  }
+
   let coverUrl;
 
   try {
@@ -152,17 +154,8 @@ async function saveBook(){
     return;
   }
 
-    let coverUrl;
-
-  try {
-    coverUrl = await uploadCover();
-  } catch(error) {
-    alert("ფოტოს ატვირთვა ვერ მოხერხდა: " + error.message);
-    return;
-  }
-
   const book={
-    title:document.getElementById("title").value.trim(),
+    title:title,
     description:document.getElementById("description").value,
     price:Number(document.getElementById("price").value),
     cover_url:coverUrl,
@@ -170,13 +163,6 @@ async function saveBook(){
     pages:Number(document.getElementById("pages").value),
     age:document.getElementById("age").value
   };
-  };
-  };
-
-  if(!book.title){
-    alert("ჩაწერე ზღაპრის სათაური");
-    return;
-  }
 
   let result;
 
@@ -202,8 +188,8 @@ function editBook(book){
   document.getElementById("title").value=book.title||"";
   document.getElementById("description").value=book.description||"";
   document.getElementById("price").value=book.price||7;
-  existingCoverUrl = book.cover_url || "";
-document.getElementById("coverFile").value = "";
+  existingCoverUrl=book.cover_url||"";
+  document.getElementById("coverFile").value="";
   document.getElementById("pdf").value=book.pdf_url||"";
   document.getElementById("pages").value=book.pages||12;
   document.getElementById("age").value=book.age||"2–4 წელი";
@@ -224,7 +210,7 @@ async function deleteBook(id){
 }
 
 function clearForm(){
-  existingCoverUrl = "";
+  existingCoverUrl="";
   ["title","description","pdf","coverFile"].forEach(id=>{
     document.getElementById(id).value="";
   });
