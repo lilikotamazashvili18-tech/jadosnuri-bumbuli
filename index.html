@@ -43,6 +43,66 @@
 <footer>
   © 2026 ჯადოსნური ბუმბული ✨
 </footer>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
+<script>
+const SUPABASE_URL = "https://nraykxancxojrvmcxsvj.supabase.co ";
+const SUPABASE_KEY = "sb_publishable_nh4gN8C_bVbe7AZ8yuaGlg_SL8Rb7Vz ";
+
+const db = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+async function showBooks() {
+  const { data, error } = await db
+    .from("books")
+    .select("*")
+    .order("id");
+
+  if (error || !data || data.length === 0) return;
+
+  const container = document.querySelector(".books");
+  container.innerHTML = "";
+
+  data.forEach(book => {
+    const article = document.createElement("article");
+    article.className = "book";
+
+    if (book.cover_url) {
+      const img = document.createElement("img");
+      img.src = book.cover_url;
+      img.alt = book.title;
+      article.appendChild(img);
+    }
+
+    const title = document.createElement("h3");
+    title.textContent = book.title;
+    article.appendChild(title);
+
+    const description = document.createElement("p");
+    description.textContent = book.description || "";
+    article.appendChild(description);
+
+    const details = document.createElement("p");
+    details.textContent =
+      (book.pages || 12) + " გვერდი • " + (book.age || "2–4 წელი");
+    article.appendChild(details);
+
+    const price = document.createElement("div");
+    price.className = "price";
+    price.textContent = book.price + " ₾";
+    article.appendChild(price);
+
+    const buy = document.createElement("a");
+    buy.className = "buy";
+    buy.href = "https://wa.me/995591754877?text=" +
+      encodeURIComponent("გამარჯობა, მინდა " + book.title + "-ის შეძენა");
+    buy.textContent = "შეიძინე ზღაპარი";
+    article.appendChild(buy);
+
+    container.appendChild(article);
+  });
+}
+
+showBooks();
+</script>
 </body>
 </html>
