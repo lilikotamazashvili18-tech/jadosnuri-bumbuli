@@ -1,94 +1,190 @@
 <!DOCTYPE html>
 <html lang="ka">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>ადმინისტრატორი — ჯადოსნური ბუმბული</title>
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      background: #f8f0ff;
-      display: grid;
-      place-items: center;
-      min-height: 100vh;
-      margin: 0;
-    }
-    .box {
-      background: white;
-      padding: 28px;
-      border-radius: 18px;
-      width: min(85%, 360px);
-      text-align: center;
-      box-shadow: 0 4px 20px #0001;
-    }
-    input, button {
-      box-sizing: border-box;
-      width: 100%;
-      padding: 13px;
-      margin: 8px 0;
-      border-radius: 9px;
-      border: 1px solid #ddd;
-      font-size: 16px;
-    }
-    button {
-      background: #a77bd1;
-      color: white;
-      border: 0;
-      cursor: pointer;
-    }
-    #message { margin-top: 12px; }
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ადმინისტრატორი — ჯადოსნური ბუმბული</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+body{font-family:Arial,sans-serif;background:#f8f0ff;margin:0;padding:20px;color:#40334a}
+.box{max-width:650px;margin:30px auto;background:white;padding:22px;border-radius:18px}
+input,textarea,button{box-sizing:border-box;width:100%;padding:12px;margin:7px 0;border:1px solid #ddd;border-radius:9px;font-size:16px}
+button{background:#a77bd1;color:white;border:0;cursor:pointer}
+.book{border:1px solid #eee;padding:14px;margin:12px 0;border-radius:12px}
+.book button{width:auto;padding:9px 14px}
+.hidden{display:none}
+#message{color:#a33}
+</style>
 </head>
 <body>
-  <div class="box">
-    <h2>ჯადოსნური ბუმბული ✨</h2>
-    <h3>ადმინისტრატორის შესვლა</h3>
+<div class="box">
+<h2>ჯადოსნური ბუმბული ✨</h2>
 
-    <input id="email" type="email" placeholder="ელფოსტა">
-    <input id="password" type="password" placeholder="პაროლი">
-    <button onclick="login()">შესვლა</button>
+<div id="login">
+<h3>ადმინისტრატორის შესვლა</h3>
+<input id="email" type="email" placeholder="ელფოსტა">
+<input id="password" type="password" placeholder="პაროლი">
+<button onclick="login()">შესვლა</button>
+</div>
 
-    <p id="message"></p>
-  </div>
+<p id="message"></p>
 
-  <script>
-    const SUPABASE_URL = " https://nraykxancxojrvmcxsvj.supabase.co ";
-    const SUPABASE_KEY = " sb_publishable_nh4gN8C_bVbe7AZ8yuaGlg_SL8Rb7Vz  ";
+<div id="panel" class="hidden">
+<h3>ზღაპრების მართვა 📚</h3>
+<button onclick="logout()">გასვლა</button>
 
-    const supabaseClient = supabase.createClient(
-      SUPABASE_URL,
-      SUPABASE_KEY
-    );
+<h3>ახალი ზღაპრის დამატება</h3>
+<input id="title" placeholder="ზღაპრის სათაური">
+<textarea id="description" placeholder="ზღაპრის აღწერა"></textarea>
+<input id="price" type="number" placeholder="ფასი" value="7">
+<input id="cover" placeholder="ყდის სურათის ბმული">
+<input id="pdf" placeholder="PDF ფაილის ბმული">
+<input id="pages" type="number" placeholder="გვერდების რაოდენობა" value="12">
+<input id="age" placeholder="ასაკი" value="2–4 წელი">
+<button onclick="saveBook()">ზღაპრის შენახვა</button>
 
-    async function login() {
-      const email = document.getElementById("email").value;
-      const password = document.getElementById("password").value;
-      const message = document.getElementById("message");
+<h3>არსებული ზღაპრები</h3>
+<div id="books"></div>
+</div>
+</div>
 
-      message.textContent = "ვამოწმებ...";
+<script>
+const SUPABASE_URL = "https://nraykxancxojrvmcxsvj.supabase.co  ";
+const SUPABASE_KEY = "sb_publishable_nh4gN8C_bVbe7AZ8yuaGlg_SL8Rb7Vz  ";
 
-      const { data, error } =
-        await supabaseClient.auth.signInWithPassword({
-          email,
-          password
-        });
+const db = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+let editingId = null;
 
-      if (error) {
-        message.textContent = "შესვლა ვერ მოხერხდა: " + error.message;
-        return;
-      }
+async function login(){
+  const {data,error} = await db.auth.signInWithPassword({
+    email:document.getElementById("email").value,
+    password:document.getElementById("password").value
+  });
 
-      const role = data.user.app_metadata?.role;
+  if(error){
+    document.getElementById("message").textContent=error.message;
+    return;
+  }
 
-      if (role !== "admin") {
-        await supabaseClient.auth.signOut();
-        message.textContent = "ადმინისტრატორის უფლება არ გაქვს.";
-        return;
-      }
+  if(data.user.app_metadata?.role !== "admin"){
+    await db.auth.signOut();
+    document.getElementById("message").textContent="ადმინისტრატორის უფლება არ გაქვს.";
+    return;
+  }
 
-      message.textContent = "წარმატებით შეხვედი! ❤️";
-    }
-  </script>
+  document.getElementById("login").classList.add("hidden");
+  document.getElementById("message").textContent="";
+  document.getElementById("panel").classList.remove("hidden");
+  loadBooks();
+}
+
+async function logout(){
+  await db.auth.signOut();
+  location.reload();
+}
+
+async function loadBooks(){
+  const {data,error}=await db.from("books").select("*").order("id");
+
+  if(error){
+    document.getElementById("books").textContent=error.message;
+    return;
+  }
+
+  const list=document.getElementById("books");
+  list.innerHTML="";
+
+  data.forEach(book=>{
+    const item=document.createElement("div");
+    item.className="book";
+
+    const name=document.createElement("strong");
+    name.textContent=book.title;
+
+    const price=document.createElement("p");
+    price.textContent=book.price+" ₾";
+
+    const edit=document.createElement("button");
+    edit.textContent="შეცვლა";
+    edit.onclick=()=>editBook(book);
+
+    const remove=document.createElement("button");
+    remove.textContent="წაშლა";
+    remove.onclick=()=>deleteBook(book.id);
+
+    item.append(name,price,edit,remove);
+    list.appendChild(item);
+  });
+}
+
+async function saveBook(){
+  const book={
+    title:document.getElementById("title").value.trim(),
+    description:document.getElementById("description").value,
+    price:Number(document.getElementById("price").value),
+    cover_url:document.getElementById("cover").value,
+    pdf_url:document.getElementById("pdf").value,
+    pages:Number(document.getElementById("pages").value),
+    age:document.getElementById("age").value
+  };
+
+  if(!book.title){
+    alert("ჩაწერე ზღაპრის სათაური");
+    return;
+  }
+
+  let result;
+
+  if(editingId){
+    result=await db.from("books").update(book).eq("id",editingId);
+  }else{
+    result=await db.from("books").insert(book);
+  }
+
+  if(result.error){
+    alert(result.error.message);
+    return;
+  }
+
+  editingId=null;
+  clearForm();
+  loadBooks();
+  alert("ზღაპარი შენახულია ❤️");
+}
+
+function editBook(book){
+  editingId=book.id;
+  document.getElementById("title").value=book.title||"";
+  document.getElementById("description").value=book.description||"";
+  document.getElementById("price").value=book.price||7;
+  document.getElementById("cover").value=book.cover_url||"";
+  document.getElementById("pdf").value=book.pdf_url||"";
+  document.getElementById("pages").value=book.pages||12;
+  document.getElementById("age").value=book.age||"2–4 წელი";
+  window.scrollTo(0,0);
+}
+
+async function deleteBook(id){
+  if(!confirm("ნამდვილად გინდა ზღაპრის წაშლა?")) return;
+
+  const {error}=await db.from("books").delete().eq("id",id);
+
+  if(error){
+    alert(error.message);
+    return;
+  }
+
+  loadBooks();
+}
+
+function clearForm(){
+  ["title","description","cover","pdf"].forEach(id=>{
+    document.getElementById(id).value="";
+  });
+  document.getElementById("price").value=7;
+  document.getElementById("pages").value=12;
+  document.getElementById("age").value="2–4 წელი";
+}
+</script>
 </body>
 </html>
