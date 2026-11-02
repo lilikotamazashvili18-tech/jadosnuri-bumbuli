@@ -4,9 +4,53 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>ჯადოსნური ბუმბული</title>
+  <title>ჯადოსნური ბუმბული ✨</title>
+  <meta name="description" content="ჯადოსნური ბუმბული — ორიგინალური ზღაპრები პატარა მკითხველებისთვის.">
   <link rel="stylesheet" href="style.css">
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+  <style>
+    html { scroll-behavior: smooth; }
+    .nav {
+      display:flex; justify-content:center; align-items:center;
+      flex-wrap:wrap; gap:22px; padding:18px;
+      background:#fff9ff; position:sticky; top:0; z-index:10;
+      box-shadow:0 3px 15px #9e76b51a;
+    }
+    .nav a {
+      color:#805c96; text-decoration:none; font-weight:bold;
+    }
+    .hero {
+      text-align:center; padding:65px 20px;
+      background:linear-gradient(135deg,#fce1f1,#e9ddff);
+      border-radius:0 0 40px 40px;
+    }
+    .hero h2 { color:#8759a6; font-size:clamp(28px,5vw,44px); }
+    .hero p { line-height:1.8; max-width:600px; margin:15px auto; }
+    .hero a {
+      display:inline-block; background:#a77bd1; color:white;
+      padding:13px 27px; border-radius:30px;
+      text-decoration:none; margin-top:15px;
+    }
+    .section {
+      max-width:1000px; margin:65px auto; padding:0 20px;
+      text-align:center;
+    }
+    .section h2 { color:#9569b5; font-size:30px; }
+    .about-text {
+      background:white; padding:25px; border-radius:22px;
+      line-height:1.9; box-shadow:0 5px 20px #9e76b51a;
+    }
+    .contact a { color:#9569b5; font-weight:bold; }
+    .book img { max-height:350px; object-fit:contain; }
+    .admin-link {
+      font-size:12px; color:#927da0; text-decoration:none;
+      opacity:.7;
+    }
+    #book-message { text-align:center; color:#805c96; }
+  </style>
 </head>
+
 <body>
 
 <header>
@@ -14,36 +58,71 @@
   <p>პატარა მკითხველებისთვის შექმნილი დიდი თავგადასავლები</p>
 </header>
 
-<main>
+<nav class="nav">
+  <a href="#home">მთავარი</a>
+  <a href="#stories">ზღაპრები</a>
+  <a href="#about">ჩვენს შესახებ</a>
+  <a href="#contact">კონტაქტი</a>
+</nav>
+
+<section class="hero" id="home">
+  <h2>მოდი, ერთად ვიმოგზაუროთ ზღაპრების სამყაროში! ✨</h2>
+  <p>
+    აქ თითოეული ზღაპარი სიყვარულით შექმნილი პატარა სამყაროა,
+    სადაც ბავშვები სწავლობენ სიკეთეს, მეგობრობასა და სიყვარულს.
+  </p>
+  <a href="#stories">აღმოაჩინე ზღაპრები 📚</a>
+</section>
+
+<main class="section" id="stories">
   <h2>ჩვენი ზღაპრები 📚</h2>
+  <p>აირჩიე შენი საყვარელი თავგადასავალი!</p>
 
-  <div class="books">
-
+  <div class="books" id="books">
     <article class="book">
       <img src="cover.jpg" alt="ჯადოსნური ვარსკვლავის ყდა">
-        
-
       <h3>ჯადოსნური ვარსკვლავი</h3>
-
       <p>თბილი და ჯადოსნური ამბავი პატარა ბიჭუნაზე, რომელიც სწავლობს დედიკოს მოსმენას და სათამაშოების დალაგებას.</p>
-
       <p>12 გვერდი • 2–4 წელი</p>
-
       <div class="price">7 ₾</div>
-
-      <a class="buy"
-         href="https://wa.me/995591754877?text=გამარჯობა%2C%20მინდა%20ჯადოსნური%20ვარსკვლავის%20შეძენა">
-         შეიძინე ზღაპარი
+      <a class="buy" href="https://wa.me/995591754877?text=გამარჯობა%2C%20მინდა%20ჯადოსნური%20ვარსკვლავის%20შეძენა">
+        შეიძინე ზღაპარი
       </a>
     </article>
-
   </div>
+
+  <p id="book-message"></p>
 </main>
 
+<section class="section" id="about">
+  <h2>ჩვენს შესახებ 💜</h2>
+  <div class="about-text">
+    <p>
+      „ჯადოსნური ბუმბული“ არის პატარა ზღაპრული სივრცე,
+      რომელიც ბავშვებისთვის შექმნილ ორიგინალურ ისტორიებს აერთიანებს.
+    </p>
+    <p>
+      გვჯერა, რომ ზღაპრებს შეუძლიათ ბავშვებს ასწავლონ სიკეთე,
+      მზრუნველობა, მეგობრობა და სიყვარული.
+    </p>
+    <p>ჩვენი მიზანია, თითოეულ პატარა მკითხველს ჯადოსნური სამყარო ვაჩუქოთ.</p>
+  </div>
+</section>
+
+<section class="section contact" id="contact">
+  <h2>დაგვიკავშირდი 💌</h2>
+  <p>ზღაპრების შეძენისა და კითხვებისთვის მოგვწერე WhatsApp-ზე.</p>
+  <p>
+    <a href="https://wa.me/995591754877" target="_blank" rel="noopener">
+      მოგვწერე WhatsApp-ზე
+    </a>
+  </p>
+</section>
+
 <footer>
-  © 2026 ჯადოსნური ბუმბული ✨
+  <p>© 2026 ჯადოსნური ბუმბული ✨</p>
+  <a class="admin-link" href="/admin.html">ადმინისტრატორი</a>
 </footer>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
 <script>
 const SUPABASE_URL = "https://nraykxancxojrvmcxsvj.supabase.co ";
@@ -57,21 +136,25 @@ async function showBooks() {
     .select("*")
     .order("id");
 
-  if (error || !data || data.length === 0) return;
+  if (error) {
+    document.getElementById("book-message").textContent =
+      "ზღაპრების ჩატვირთვა ვერ მოხერხდა.";
+    return;
+  }
 
-  const container = document.querySelector(".books");
+  if (!data || data.length === 0) return;
+
+  const container = document.getElementById("books");
   container.innerHTML = "";
 
   data.forEach(book => {
     const article = document.createElement("article");
     article.className = "book";
 
-    if (book.cover_url) {
-      const img = document.createElement("img");
-      img.src = book.cover_url;
-      img.alt = book.title;
-      article.appendChild(img);
-    }
+    const img = document.createElement("img");
+    img.src = book.cover_url || "cover.jpg";
+    img.alt = book.title;
+    article.appendChild(img);
 
     const title = document.createElement("h3");
     title.textContent = book.title;
@@ -104,5 +187,6 @@ async function showBooks() {
 
 showBooks();
 </script>
+
 </body>
 </html>
