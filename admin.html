@@ -54,7 +54,31 @@ const SUPABASE_URL = "https://nraykxancxojrvmcxsvj.supabase.co  ";
 const SUPABASE_KEY = "sb_publishable_nh4gN8C_bVbe7AZ8yuaGlg_SL8Rb7Vz  ";
 
 const db = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
-let editingId = null;
+let existingCoverUrl = "";
+
+async function uploadCover(){
+  const file = document.getElementById("coverFile").files[0];
+
+  if(!file) return existingCoverUrl;
+
+  if(!file.type.startsWith("image/")){
+    throw new Error("აირჩიე სურათის ფაილი.");
+  }
+
+  const path = Date.now() + "-" + file.name.replace(/[^a-zA-Z0-9._-]/g, "-");
+
+  const {error} = await db.storage
+    .from("book-covers")
+    .upload(path, file);
+
+  if(error) throw error;
+
+  const {data} = db.storage
+    .from("book-covers")
+    .getPublicUrl(path);
+
+  return data.publicUrl;
+}
 
 async function login(){
   const {data,error} = await db.auth.signInWithPassword({
