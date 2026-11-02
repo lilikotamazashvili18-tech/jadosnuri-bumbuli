@@ -143,14 +143,34 @@ async function loadBooks(){
 }
 
 async function saveBook(){
+  let coverUrl;
+
+  try {
+    coverUrl = await uploadCover();
+  } catch(error) {
+    alert("ფოტოს ატვირთვა ვერ მოხერხდა: " + error.message);
+    return;
+  }
+
+    let coverUrl;
+
+  try {
+    coverUrl = await uploadCover();
+  } catch(error) {
+    alert("ფოტოს ატვირთვა ვერ მოხერხდა: " + error.message);
+    return;
+  }
+
   const book={
     title:document.getElementById("title").value.trim(),
     description:document.getElementById("description").value,
     price:Number(document.getElementById("price").value),
-    cover_url:document.getElementById("cover").value,
+    cover_url:coverUrl,
     pdf_url:document.getElementById("pdf").value,
     pages:Number(document.getElementById("pages").value),
     age:document.getElementById("age").value
+  };
+  };
   };
 
   if(!book.title){
@@ -182,7 +202,8 @@ function editBook(book){
   document.getElementById("title").value=book.title||"";
   document.getElementById("description").value=book.description||"";
   document.getElementById("price").value=book.price||7;
-  document.getElementById("cover").value=book.cover_url||"";
+  existingCoverUrl = book.cover_url || "";
+document.getElementById("coverFile").value = "";
   document.getElementById("pdf").value=book.pdf_url||"";
   document.getElementById("pages").value=book.pages||12;
   document.getElementById("age").value=book.age||"2–4 წელი";
@@ -203,7 +224,8 @@ async function deleteBook(id){
 }
 
 function clearForm(){
-  ["title","description","cover","pdf"].forEach(id=>{
+  existingCoverUrl = "";
+  ["title","description","pdf","coverFile"].forEach(id=>{
     document.getElementById(id).value="";
   });
   document.getElementById("price").value=7;
