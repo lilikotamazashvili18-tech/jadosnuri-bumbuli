@@ -10,11 +10,13 @@
 body{font-family:Arial,sans-serif;background:#f8f0ff;margin:0;padding:20px;color:#40334a}
 .box{max-width:650px;margin:30px auto;background:white;padding:22px;border-radius:18px}
 input,textarea,button{box-sizing:border-box;width:100%;padding:12px;margin:7px 0;border:1px solid #ddd;border-radius:9px;font-size:16px}
+textarea{min-height:120px}
 button{background:#a77bd1;color:white;border:0;cursor:pointer}
-.book{border:1px solid #eee;padding:14px;margin:12px 0;border-radius:12px}
+.book{border:1px solid #eee;padding:14px;margin:12px 0;border-radius:12px;white-space:pre-wrap}
 .book button{width:auto;padding:9px 14px}
 .hidden{display:none}
 #message{color:#a33}
+h3{margin-top:28px}
 </style>
 </head>
 <body>
@@ -31,22 +33,36 @@ button{background:#a77bd1;color:white;border:0;cursor:pointer}
 <p id="message"></p>
 
 <div id="panel" class="hidden">
-<h3>ზღაპრების მართვა 📚</h3>
 <button onclick="logout()">გასვლა</button>
 
-<h3>ახალი ზღაპრის დამატება</h3>
+<h3>ზღაპრების მართვა 📚</h3>
+
+<h4>ახალი ზღაპრის დამატება</h4>
 <input id="title" placeholder="ზღაპრის სათაური">
 <textarea id="description" placeholder="ზღაპრის აღწერა"></textarea>
 <input id="price" type="number" placeholder="ფასი" value="7">
-<label for="coverFile">ყდის ფოტო (აირჩიე გალერეიდან)</label>
+<label for="coverFile">ყდის ფოტო</label>
 <input id="coverFile" type="file" accept="image/*">
 <input id="pdf" placeholder="PDF ფაილის ბმული">
 <input id="pages" type="number" placeholder="გვერდების რაოდენობა" value="12">
 <input id="age" placeholder="ასაკი" value="2–4 წელი">
 <button onclick="saveBook()">ზღაპრის შენახვა</button>
 
-<h3>არსებული ზღაპრები</h3>
+<h4>არსებული ზღაპრები</h4>
 <div id="books"></div>
+
+<hr>
+
+<h3>ლექსების მართვა ✍️</h3>
+
+<h4>ახალი ლექსის დამატება</h4>
+<input id="poemTitle" placeholder="ლექსის სათაური">
+<textarea id="poemContent" placeholder="აქ ჩაწერე ლექსის ტექსტი"></textarea>
+<button onclick="savePoem()">ლექსის შენახვა</button>
+<button id="cancelPoem" class="hidden" onclick="clearPoemForm()">გაუქმება</button>
+
+<h4>არსებული ლექსები</h4>
+<div id="poems"></div>
 </div>
 </div>
 
@@ -55,8 +71,10 @@ const SUPABASE_URL = "https://nraykxancxojrvmcxsvj.supabase.co";
 const SUPABASE_KEY = "sb_publishable_nh4gN8C_bVbe7AZ8yuaGlg_SL8Rb7Vz";
 
 const db = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
 let editingId = null;
 let existingCoverUrl = "";
+let editingPoemId = null;
 
 async function uploadCover(){
   const file = document.getElementById("coverFile").files[0];
@@ -95,13 +113,17 @@ async function login(){
   document.getElementById("login").classList.add("hidden");
   document.getElementById("message").textContent="";
   document.getElementById("panel").classList.remove("hidden");
+
   loadBooks();
+  loadPoems();
 }
 
 async function logout(){
   await db.auth.signOut();
   location.reload();
 }
+
+/* ზღაპრები */
 
 async function loadBooks(){
   const {data,error}=await db.from("books").select("*").order("id");
@@ -217,6 +239,104 @@ function clearForm(){
   document.getElementById("price").value=7;
   document.getElementById("pages").value=12;
   document.getElementById("age").value="2–4 წელი";
+}
+
+/* ლექსები */
+
+async function loadPoems(){
+  const {data,error}=await db.from("poems").select("*").order("id");
+
+  const list=document.getElementById("poems");
+  list.innerHTML="";
+
+  if(error){
+    list.textContent="ლექსების ჩატვირთვა ვერ მოხერხდა: "+error.message;
+    return;
+  }
+
+  if(!data.length){
+    list.textContent="ჯერ ლექსები არ დამატებულა.";
+    return;
+  }
+
+  data.forEach(poem=>{
+    const item=document.createElement("div");
+    item.className="book";
+
+    const name=document.createElement("strong");
+    name.textContent=poem.title;
+
+    const content=document.createElement("p");
+    content.textContent=poem.content;
+
+    const edit=document.createElement("button");
+    edit.textContent="შეცვლა";
+    edit.onclick=()=>editPoem(poem);
+
+    const remove=document.createElement("button");
+    remove.textContent="წაშლა";
+    remove.onclick=()=>deletePoem(poem.id);
+
+    item.append(name,content,edit,remove);
+    list.appendChild(item);
+  });
+}
+
+async function savePoem(){
+  const title=document.getElementById("poemTitle").value.trim();
+  const content=document.getElementById("poemContent").value.trim();
+
+  if(!title || !content){
+    alert("შეავსე ლექსის სათაური და ტექსტი.");
+    return;
+  }
+
+  const poem={title,content};
+
+  let result;
+
+  if(editingPoemId){
+    result=await db.from("poems").update(poem).eq("id",editingPoemId);
+  }else{
+    result=await db.from("poems").insert(poem);
+  }
+
+  if(result.error){
+    alert("შენახვა ვერ მოხერხდა: "+result.error.message);
+    return;
+  }
+
+  clearPoemForm();
+  await loadPoems();
+  alert("ლექსი შენახულია ❤️");
+}
+
+function editPoem(poem){
+  editingPoemId=poem.id;
+  document.getElementById("poemTitle").value=poem.title||"";
+  document.getElementById("poemContent").value=poem.content||"";
+  document.getElementById("cancelPoem").classList.remove("hidden");
+  window.scrollTo(0,document.body.scrollHeight);
+}
+
+async function deletePoem(id){
+  if(!confirm("ნამდვილად გინდა ლექსის წაშლა?")) return;
+
+  const {error}=await db.from("poems").delete().eq("id",id);
+
+  if(error){
+    alert("წაშლა ვერ მოხერხდა: "+error.message);
+    return;
+  }
+
+  await loadPoems();
+}
+
+function clearPoemForm(){
+  editingPoemId=null;
+  document.getElementById("poemTitle").value="";
+  document.getElementById("poemContent").value="";
+  document.getElementById("cancelPoem").classList.add("hidden");
 }
 </script>
 </body>
