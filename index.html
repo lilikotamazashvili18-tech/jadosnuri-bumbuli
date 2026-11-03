@@ -59,7 +59,7 @@
       padding:13px 27px;
       border-radius:30px;
       text-decoration:none;
-      margin-top:15px;
+      margin:15px 5px 0;
     }
 
     .section {
@@ -103,8 +103,6 @@
       text-align:center;
       color:#805c96;
     }
-
-    /* ლექსების განყოფილება */
 
     .poetry-intro {
       max-width:650px;
@@ -166,9 +164,7 @@
       margin-top:12px;
     }
 
-    .poem-text.open {
-      display:block;
-    }
+    .poem-text.open { display:block; }
 
     .poetry-button {
       display:inline-block;
@@ -179,7 +175,6 @@
       padding:12px 22px;
       font-size:15px;
       font-weight:bold;
-      text-decoration:none;
       cursor:pointer;
       margin-top:14px;
     }
@@ -301,9 +296,7 @@
       margin-top:22px;
     }
 
-    .submit-order:hover {
-      background:#198747;
-    }
+    .submit-order:hover { background:#198747; }
 
     .form-error {
       color:#b42345;
@@ -361,66 +354,19 @@
       </a>
     </article>
   </div>
-
   <p id="book-message"></p>
 </main>
 
-<!-- ლექსების განყოფილება -->
-
 <section class="section" id="poems">
-  <h2>ლექსები 🪶</h2>
+  <h2>ჩვენი ლექსები 🪶</h2>
   <p class="poetry-intro">
     პატარებისთვის შექმნილი ლექსები.
-    წაიკითხე უფასო ლექსები ან შეუკვეთე შენს პატარასთვის
+    წაიკითხე ჩვენი ლექსები ან შეუკვეთე შენს პატარასთვის
     განსაკუთრებული, ინდივიდუალური ლექსი.
   </p>
 
-  <h3 style="color:#8759a6;">უფასო ლექსები 💜</h3>
-
-  <div class="poem-grid">
-
-    <article class="poem-card">
-      <div class="poem-icon">☀️</div>
-      <span class="free-label">უფასო</span>
-      <h3>მზიანი დილა</h3>
-      <button class="poetry-button" type="button"
-        onclick="togglePoem('poem1', this)">წაიკითხე ლექსი</button>
-      <div class="poem-text" id="poem1">
-მზე ამოვიდა ცაზე,
-სხივი შემოჰფინა ბაღს,
-ჩიტი მხიარულად გალობს,
-დილა გვიმზადებს თამაშს.
-      </div>
-    </article>
-
-    <article class="poem-card">
-      <div class="poem-icon">🐻</div>
-      <span class="free-label">უფასო</span>
-      <h3>პატარა დათუნია</h3>
-      <button class="poetry-button" type="button"
-        onclick="togglePoem('poem2', this)">წაიკითხე ლექსი</button>
-      <div class="poem-text" id="poem2">
-დათუნიას თათი აქვს,
-ცხვირი — პატარა ღილი,
-თაფლი უყვარს ყველაზე მეტად,
-ძილი — რბილი და ტკბილი.
-      </div>
-    </article>
-
-    <article class="poem-card">
-      <div class="poem-icon">🌙</div>
-      <span class="free-label">უფასო</span>
-      <h3>ღამე მშვიდობისა</h3>
-      <button class="poetry-button" type="button"
-        onclick="togglePoem('poem3', this)">წაიკითხე ლექსი</button>
-      <div class="poem-text" id="poem3">
-მთვარემ ცაზე დაიძინა,
-ვარსკვლავებმა დახუჭეს თვალი,
-ჩემო პატარავ, ტკბილად იძინე,
-სიზმარში გელოდეს ზღაპარი.
-      </div>
-    </article>
-
+  <div class="poem-grid" id="poemGrid">
+    <p id="poemLoading">ლექსები იტვირთება... 🪶</p>
   </div>
 
   <h3 style="color:#8759a6; margin-top:55px;">
@@ -435,7 +381,6 @@
     </p>
 
     <form id="poemOrderForm">
-
       <label for="poemTopic">რაზე გინდა ლექსი? *</label>
       <textarea id="poemTopic" name="topic"
         placeholder="მაგალითად: ლექსი პატარა ანაზე, რომელსაც უყვარს პეპლები..."
@@ -456,7 +401,6 @@
       </select>
 
       <label>აირჩიე ლექსის მოცულობა *</label>
-
       <div class="price-options">
         <label class="price-option">
           <input type="radio" name="length"
@@ -523,7 +467,6 @@
 </section>
 
 <footer style="text-align:center; padding:35px 20px; background:linear-gradient(135deg,#fce1f1,#e9ddff); border-radius:30px 30px 0 0; margin-top:60px; color:#70527f;">
-
   <h2 style="color:#8759a6;">ჯადოსნური ბუმბული ✨</h2>
 
   <p style="font-style:italic;">
@@ -549,20 +492,154 @@
   </p>
 
   <a class="admin-link" href="/admin.html">ადმინისტრატორი</a>
-
 </footer>
 
 <script>
 const WHATSAPP_NUMBER = "995591754877";
 
-function togglePoem(id, button) {
-  const poem = document.getElementById(id);
-  const isOpen = poem.classList.toggle("open");
+const SUPABASE_URL =
+  "https://nraykxancxojrvmcxsvj.supabase.co";
 
-  button.textContent = isOpen
-    ? "დახურე ლექსი"
-    : "წაიკითხე ლექსი";
+const SUPABASE_KEY =
+  "sb_publishable_nh4gN8C_bVbe7AZ8yuaGlg_SL8Rb7Vz";
+
+const db = window.supabase.createClient(
+  SUPABASE_URL,
+  SUPABASE_KEY
+);
+
+/* ლექსების ჩატვირთვა Supabase-დან */
+
+async function showPoems() {
+  const container = document.getElementById("poemGrid");
+
+  container.innerHTML = "<p>ლექსები იტვირთება... 🪶</p>";
+
+  const { data, error } = await db
+    .from("poems")
+    .select("*")
+    .order("id", { ascending: true });
+
+  if (error) {
+    console.error("Poems loading error:", error);
+    container.innerHTML =
+      "<p>ლექსების ჩატვირთვა ვერ მოხერხდა. გთხოვ, მოგვიანებით სცადე.</p>";
+    return;
+  }
+
+  if (!data || data.length === 0) {
+    container.innerHTML =
+      "<p>ლექსები მალე დაემატება. 💜</p>";
+    return;
+  }
+
+  container.innerHTML = "";
+
+  const icons = ["🪶", "🌸", "⭐", "🌙", "🦋"];
+
+  data.forEach((poem, index) => {
+    const article = document.createElement("article");
+    article.className = "poem-card";
+
+    const icon = document.createElement("div");
+    icon.className = "poem-icon";
+    icon.textContent = icons[index % icons.length];
+
+    const label = document.createElement("span");
+    label.className = "free-label";
+    label.textContent = "უფასო";
+
+    const title = document.createElement("h3");
+    title.textContent = poem.title || "უსათაურო ლექსი";
+
+    const button = document.createElement("button");
+    button.className = "poetry-button";
+    button.type = "button";
+    button.textContent = "წაიკითხე ლექსი";
+
+    const content = document.createElement("div");
+    content.className = "poem-text";
+    content.textContent = poem.content || "";
+
+    button.addEventListener("click", () => {
+      const isOpen = content.classList.toggle("open");
+      button.textContent = isOpen
+        ? "დახურე ლექსი"
+        : "წაიკითხე ლექსი";
+    });
+
+    article.appendChild(icon);
+    article.appendChild(label);
+    article.appendChild(title);
+    article.appendChild(button);
+    article.appendChild(content);
+
+    container.appendChild(article);
+  });
 }
+
+/* ზღაპრების ჩატვირთვა Supabase-დან */
+
+async function showBooks() {
+  const { data, error } = await db
+    .from("books")
+    .select("*")
+    .order("id");
+
+  if (error) {
+    document.getElementById("book-message").textContent =
+      "ზღაპრების ჩატვირთვა ვერ მოხერხდა.";
+    console.error(error);
+    return;
+  }
+
+  if (!data || data.length === 0) return;
+
+  const container = document.getElementById("books");
+  container.innerHTML = "";
+
+  data.forEach(book => {
+    const article = document.createElement("article");
+    article.className = "book";
+
+    const img = document.createElement("img");
+    img.src = book.cover_url || "cover.jpg";
+    img.alt = book.title || "ზღაპრის ყდა";
+    article.appendChild(img);
+
+    const title = document.createElement("h3");
+    title.textContent = book.title || "";
+    article.appendChild(title);
+
+    const description = document.createElement("p");
+    description.textContent = book.description || "";
+    article.appendChild(description);
+
+    const details = document.createElement("p");
+    details.textContent =
+      (book.pages || 12) + " გვერდი • " +
+      (book.age || "2–4 წელი");
+    article.appendChild(details);
+
+    const price = document.createElement("div");
+    price.className = "price";
+    price.textContent = book.price + " ₾";
+    article.appendChild(price);
+
+    const buy = document.createElement("a");
+    buy.className = "buy";
+    buy.href = "https://wa.me/" + WHATSAPP_NUMBER +
+      "?text=" + encodeURIComponent(
+        "გამარჯობა, მინდა " + book.title + "-ის შეძენა"
+      );
+    buy.textContent = "შეიძინე ზღაპარი";
+    article.appendChild(buy);
+
+    container.appendChild(article);
+  });
+}
+
+/* ინდივიდუალური ლექსის შეკვეთის ფორმა */
 
 document.getElementById("poemOrderForm")
   .addEventListener("submit", function(event) {
@@ -572,11 +649,12 @@ document.getElementById("poemOrderForm")
     const childName = document.getElementById("childName").value.trim();
     const age = document.getElementById("childAge").value;
     const style = document.getElementById("poemStyle").value;
+
     const selectedLength = document.querySelector(
       'input[name="length"]:checked'
     );
-    const error = document.getElementById("poemFormError");
 
+    const error = document.getElementById("poemFormError");
     error.textContent = "";
 
     if (!topic || !age || !style || !selectedLength) {
@@ -607,80 +685,10 @@ document.getElementById("poemOrderForm")
     window.location.href = whatsappUrl;
   });
 
-/* ზღაპრების ჩატვირთვა Supabase-დან */
+/* გვერდის ჩატვირთვისას მონაცემების გამოძახება */
 
-const SUPABASE_URL =
-  "https://nraykxancxojrvmcxsvj.supabase.co";
-
-const SUPABASE_KEY =
-  "sb_publishable_nh4gN8C_bVbe7AZ8yuaGlg_SL8Rb7Vz";
-
-if (window.supabase) {
-  const db = window.supabase.createClient(
-    SUPABASE_URL,
-    SUPABASE_KEY
-  );
-
-  async function showBooks() {
-    const { data, error } = await db
-      .from("books")
-      .select("*")
-      .order("id");
-
-    if (error) {
-      document.getElementById("book-message").textContent =
-        "ზღაპრების ჩატვირთვა ვერ მოხერხდა.";
-      return;
-    }
-
-    if (!data || data.length === 0) return;
-
-    const container = document.getElementById("books");
-    container.innerHTML = "";
-
-    data.forEach(book => {
-      const article = document.createElement("article");
-      article.className = "book";
-
-      const img = document.createElement("img");
-      img.src = book.cover_url || "cover.jpg";
-      img.alt = book.title || "ზღაპრის ყდა";
-      article.appendChild(img);
-
-      const title = document.createElement("h3");
-      title.textContent = book.title || "";
-      article.appendChild(title);
-
-      const description = document.createElement("p");
-      description.textContent = book.description || "";
-      article.appendChild(description);
-
-      const details = document.createElement("p");
-      details.textContent =
-        (book.pages || 12) + " გვერდი • " +
-        (book.age || "2–4 წელი");
-      article.appendChild(details);
-
-      const price = document.createElement("div");
-      price.className = "price";
-      price.textContent = book.price + " ₾";
-      article.appendChild(price);
-
-      const buy = document.createElement("a");
-      buy.className = "buy";
-      buy.href = "https://wa.me/" + WHATSAPP_NUMBER +
-        "?text=" + encodeURIComponent(
-          "გამარჯობა, მინდა " + book.title + "-ის შეძენა"
-        );
-      buy.textContent = "შეიძინე ზღაპარი";
-      article.appendChild(buy);
-
-      container.appendChild(article);
-    });
-  }
-
-  showBooks();
-}
+showPoems();
+showBooks();
 </script>
 
 </body>
